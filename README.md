@@ -104,15 +104,15 @@ A fresh access token is cheap to obtain and this service must stay stateless, so
 
 **Credentials are read from HTTP headers only, on every request — never from environment variables.** There is no local/single-tenant fallback mode; this keeps one tenant's credentials from ever leaking into another tenant's request.
 
-## 授权参数说明 (Authentication headers)
+## Authentication headers
 
 Every request to `/mcp` must include the following HTTP headers:
 
-| Header | 类型 | 是否必填 | 默认值 | 枚举值 | 字段描述 | Example |
+| Header | Type | Required | Default | Allowed values | Description | Example |
 |---|---|---|---|---|---|---|
-| `X-RingCentral-Client-Id` | string | 是 | 无 | 无 | RingCentral App 的 Client ID(在 RingCentral 开发者后台申请的应用) | `abCdEfGhIjKlMnOpQr` |
-| `X-RingCentral-Client-Secret` | string | 是 | 无 | 无 | RingCentral App 的 Client Secret | `xYz123AbC456DeF789` |
-| `X-RingCentral-Jwt` | string | 是 | 无 | 无 | 绑定在某个 Service User 上的 JWT 凭据(RingCentral 后台 Roles & Permissions 生成),本服务用其换取短期 access token,从不落盘存储 | `eyJhbGciOiJSUzI1NiIs...`(一长串 JWT 字符串) |
+| `X-RingCentral-Client-Id` | string | Yes | None | None | Client ID of the RingCentral App (an app registered in the RingCentral developer console) | `abCdEfGhIjKlMnOpQr` |
+| `X-RingCentral-Client-Secret` | string | Yes | None | None | Client Secret of the RingCentral App | `xYz123AbC456DeF789` |
+| `X-RingCentral-Jwt` | string | Yes | None | None | JWT credential bound to a Service User (generated under Roles & Permissions in the RingCentral admin console); this service exchanges it for a short-lived access token and never stores it on disk | `eyJhbGciOiJSUzI1NiIs...`(a long JWT string) |
 
 Missing any of the three headers returns `401 Unauthorized` with a `required_headers` list in the body.
 
@@ -163,25 +163,25 @@ Connect your MCP client with:
 
 ## Available Tools (13)
 
-| Tool | 功能 | 参数 | API |
+| Tool | Description | Parameters | API |
 |---|---|---|---|
-| `ringcentral_get_account_info` | 获取当前账号的公司/账号基本信息 | 无 | `GET /restapi/v1.0/account/~` |
-| `ringcentral_list_extensions` | 列出账号下的分机(用户/队列/部门) | `type?`, `status?`, `extension_number?`, `email?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension` |
-| `ringcentral_get_extension` | 获取单个分机详情 | `extension_id?`(默认 `~` 即当前认证分机) | `GET /restapi/v1.0/account/~/extension/{extensionId}` |
-| `ringcentral_list_phone_numbers` | 列出公司及分机号码 | `usage_type?`, `status?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/phone-number` |
-| `ringcentral_get_presence` | 获取分机的在线/通话/免打扰状态 | `extension_id?`(默认 `~`) | `GET /restapi/v1.0/account/~/extension/{extensionId}/presence` |
-| `ringcentral_list_queues` | 列出呼叫队列 | `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-queues` |
-| `ringcentral_list_queue_members` | 列出某呼叫队列的成员 | `queue_id`(必填), `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-queues/{groupId}/members` |
-| `ringcentral_list_internal_contacts` | 列出公司通讯录(内部用户) | `type?`, `site_id?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/directory/entries` |
-| `ringcentral_list_external_contacts` | 列出某分机的个人通讯录联系人 | `extension_id?`(默认 `~`), `starts_with?`, `phone_number?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension/{extensionId}/address-book/contact` |
-| `ringcentral_list_company_call_log` | 列出全公司通话记录 | `date_from?`, `date_to?`, `view?`, `direction?`, `type?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-log` |
-| `ringcentral_list_user_call_log` | 列出单个分机的通话记录 | `extension_id?`(默认 `~`), `date_from?`, `date_to?`, `view?`, `direction?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension/{extensionId}/call-log` |
-| `ringcentral_get_call_recording` | 获取录音元数据(含下载用的 contentUri) | `recording_id`(必填,来自通话记录的 `recording.id`) | `GET /restapi/v1.0/account/~/recording/{recordingId}` |
-| `ringcentral_download_call_recording` | 获取录音媒体的 content-type/大小(不含音频本体) | `recording_id`(必填) | `GET /restapi/v1.0/account/~/recording/{recordingId}/content` |
+| `ringcentral_get_account_info` | Get basic company/account information for the current account | None | `GET /restapi/v1.0/account/~` |
+| `ringcentral_list_extensions` | List the extensions under the account (users/queues/departments) | `type?`, `status?`, `extension_number?`, `email?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension` |
+| `ringcentral_get_extension` | Get a single extension's details | `extension_id?`(default `~`, the currently authenticated extension) | `GET /restapi/v1.0/account/~/extension/{extensionId}` |
+| `ringcentral_list_phone_numbers` | List company and extension phone numbers | `usage_type?`, `status?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/phone-number` |
+| `ringcentral_get_presence` | Get an extension's online/on-call/do-not-disturb status | `extension_id?`(default `~`) | `GET /restapi/v1.0/account/~/extension/{extensionId}/presence` |
+| `ringcentral_list_queues` | List call queues | `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-queues` |
+| `ringcentral_list_queue_members` | List the members of a call queue | `queue_id`(required), `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-queues/{groupId}/members` |
+| `ringcentral_list_internal_contacts` | List the company directory (internal users) | `type?`, `site_id?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/directory/entries` |
+| `ringcentral_list_external_contacts` | List the personal address book contacts of an extension | `extension_id?`(default `~`), `starts_with?`, `phone_number?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension/{extensionId}/address-book/contact` |
+| `ringcentral_list_company_call_log` | List the company-wide call log | `date_from?`, `date_to?`, `view?`, `direction?`, `type?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/call-log` |
+| `ringcentral_list_user_call_log` | List a single extension's call log | `extension_id?`(default `~`), `date_from?`, `date_to?`, `view?`, `direction?`, `page?`, `per_page?` | `GET /restapi/v1.0/account/~/extension/{extensionId}/call-log` |
+| `ringcentral_get_call_recording` | Get recording metadata (including the contentUri used for download) | `recording_id`(required, from `recording.id` in the call log) | `GET /restapi/v1.0/account/~/recording/{recordingId}` |
+| `ringcentral_download_call_recording` | Get the recording media's content-type/size (without the audio itself) | `recording_id`(required) | `GET /restapi/v1.0/account/~/recording/{recordingId}/content` |
 
 `page`/`per_page` on list tools: this server caps `per_page` at **200** regardless of the higher limits some RingCentral endpoints document (call-log endpoints allow up to 1000, `directory/entries` up to 2000) — 200 is the stricter of "our SOP ceiling" vs. "vendor's real max" in every case here, so 200 always governs. `per_page` is otherwise passed straight through to RingCentral's own `perPage` query parameter.
 
-## 测试示例 (Test Example)
+## Test Example
 
 ```json
 {
